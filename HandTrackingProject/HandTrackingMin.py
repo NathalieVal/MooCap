@@ -1,3 +1,6 @@
+# Implementing hand tracking code
+# Will follow video w/out pseudocode while setting up tracking
+
 import cv2
 import mediapipe as mp
 import time
