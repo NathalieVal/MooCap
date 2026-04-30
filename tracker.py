@@ -33,7 +33,11 @@ class Camera:
 
 class PoseTracker:
     def __init__(self, model_path):
-        self.options = vision.PoseLandmarkerOptions()
+        self.options = vision.PoseLandmarkerOptions(
+            base_options=BaseOptions(model_asset_path=model_path),
+            running_mode=vision.RunningMode.VIDEO
+        )
+
         self.landmarker = vision.PoseLandmarker.create_from_options(self.options)
         
 cam = Camera(idx=5, width=1280, height=720)
