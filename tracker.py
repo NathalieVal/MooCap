@@ -7,7 +7,23 @@ from mediapipe.tasks.python.core.base_options import BaseOptions
 
 
 # 1) Camera input
+class Camera:
+    def __init__(self, idx=5):
+        self.cap = cv2.VideoCapture(idx)
+        if not self.cap.isOpened():
+            raise RuntimeError("Could not start webcam")
+        
+    def read(self):
+        ret, frame = self.cap.read()
+        if not ret:
+            return None
+        return frame
+    
+    def release(self):
+        self.cap.release()
+        cv2.destroyAllWindows()
 
+        
 cap = cv2.VideoCapture(5)
 
 if not cap.isOpened():
