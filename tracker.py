@@ -20,10 +20,15 @@ while True:
     if not ret:
         break
 
-    #FPS 
+    # FPS calculation
     current_time = time.time()
     fps = 1/ (current_time - previous_time) if previous_time != 0 else 0
     previous_time = current_time
+
+
+    # FPS on screen
+    cv2.putText(frame, f"{fps:.2f}", (10, 30),
+                cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
 
     cv2.imshow("Webcam Test", frame)
 
