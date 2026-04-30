@@ -5,6 +5,8 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.core.base_options import BaseOptions
 
+# landmark model: https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker
+
 POSE_CONNECTIONS = frozenset([
     (11, 13), (13, 15), # Left arm
     (12, 14), (14, 16), #Right arm
@@ -21,8 +23,6 @@ def draw_pose(frame, landmarks, visibility_threshold=0.5):
 
     points = []
 
-    # TODO TOMORROW:
-    # 1) DRAW JOINTS
     for lm in landmarks: 
         if hasattr(lm, "visibility") and lm.visibility < visibility_threshold:
             points.append(None)
@@ -35,18 +35,29 @@ def draw_pose(frame, landmarks, visibility_threshold=0.5):
         if pt is not None:
             cv2.circle(frame, pt, 4, (0, 255, 0), -1)
 
-    # 2) DRAW BONES
     for start_idx, end_idx in POSE_CONNECTIONS:
         if (start_idx < len(points)
             and end_idx < len(points)
             and points[start_idx] is not None
             and points [end_idx] is not None ):
-            cv2.line(frame, points[start_idx], points[end_idx], (0, 0, 255), 2)
+            cv2.line(frame, points[start_idx], points[end_idx], (255, 0, 0), 2)
 
 
     return points
 
-# Camera Input
+def extract_pose_data(landmarks):
+    pose_data = []
+
+    for lm in landmarks:
+        pose_data.append({
+            "x": lm.x,
+            "y": lm.y,
+            "z": lm.z,
+            "visibility": getattr(lm, "visibility", 1.0)
+        })
+
+    return pose_data
+
 class Camera:
     def __init__(self, idx=0, width=None, height=None):
         self.cap = cv2.VideoCapture(idx)
@@ -71,7 +82,6 @@ class Camera:
         self.cap.release()
         cv2.destroyAllWindows()
 
-# Body Tracking
 class PoseTracker:
     def __init__(self, model_path):
         self.options = vision.PoseLandmarkerOptions(
@@ -106,36 +116,30 @@ while True:
     if frame is None:
         break
 
-    # FPS calculation
     current_time = time.time()
     fps = 1/ (current_time - previous_time)
     previous_time = current_time
 
-    # Pose tracking
     result = tracker.process(frame, timestamp_ms)
     timestamp_ms += 1
 
-    # Print landmarks
     if result.pose_landmarks:
         landmarks = result.pose_landmarks[0]
         
         points = draw_pose(frame, landmarks)
 
+        pose_data = extract_pose_data(landmarks)
+
         # for i, lm in enumerate(result.pose_landmarks[0]):
         #     print(i, lm.x, lm.y, lm.z)
 
-    # FPS drawing
+
     cv2.putText(frame, f"{fps:.2f}", (10, 30),
                 cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
-    cv2.imshow("Camera", frame)
+    cv2.imshow("Webcam", frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
 cam.release()
-
-# What do I need for motion capture?
-# 2) Camera frames into MediaPipe
-# 3) MediaPipe pose/ face/ hand tracking model running at same time (keep it to one for now)
-# 4) Print MediaPipe landmarkers
