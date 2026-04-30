@@ -39,6 +39,18 @@ class PoseTracker:
         )
 
         self.landmarker = vision.PoseLandmarker.create_from_options(self.options)
+
+    def process(self, frame, timestamp_ms):
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        mp_image = mp.Image(
+            image_format=mp.ImageFormat.SRGB,
+            data=rgb
+        )
+
+        result = self.landmarker.detect_for_video(mp_image, timestamp_ms)
+        return result
+
         
 cam = Camera(idx=5, width=1280, height=720)
 
