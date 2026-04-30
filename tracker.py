@@ -58,6 +58,8 @@ previous_time = time.time()
 
 tracker = PoseTracker("pose_landmarker_full.task")
 
+timestamp_ms = 0
+
 while True:
     frame = cam.read()
     if frame is None:
@@ -68,6 +70,16 @@ while True:
     fps = 1/ (current_time - previous_time)
     previous_time = current_time
 
+    # Pose tracking
+    result = tracker.process(frame, timestamp_ms)
+    timestamp_ms += 1
+
+    # Print landmarks
+    if result.pose_landmarks:
+        for i, lm in enumerate(result.pose_landmarks[0]):
+            print(i, lm.x, lm.y, lm.z)
+
+    # FPS drawing
     cv2.putText(frame, f"{fps:.2f}", (10, 30),
                 cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
