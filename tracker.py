@@ -17,12 +17,23 @@ POSE_CONNECTIONS = frozenset([
 
 # Will probably add missing connections later
 
-def draw_pose(frame, landmarks):
+def draw_pose(frame, landmarks, visibility_threshold=0.5):
     h, w, _ = frame.shape
 
-# TODO TOMORROW:
-# 1) DRAW JOINTS
-# 2) DRAW BONES
+    points = []
+
+    # TODO TOMORROW:
+    # 1) DRAW JOINTS
+    for lm in landmarks: 
+        if hasattr(lm, "visibility") and lm.visibility < visibility_threshold:
+            points.append(None)
+        else:
+            x = int(lm.x * w)
+            y = int(lm.y * h)
+            points.append((x, y))
+
+
+    # 2) DRAW BONES
 
 
 # Camera Input
