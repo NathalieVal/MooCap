@@ -15,6 +15,16 @@ POSE_CONNECTIONS = frozenset([
     (24, 26), (26, 28), # Right leg
 ])
 
+# Will probably add missing connections later
+
+def draw_pose(frame, landmarks):
+    h, w, _ = frame.shape
+
+# TODO TOMORROW:
+# 1) DRAW JOINTS
+# 2) DRAW BONES
+
+
 # Camera Input
 class Camera:
     def __init__(self, idx=0, width=None, height=None):
@@ -61,7 +71,7 @@ class PoseTracker:
         result = self.landmarker.detect_for_video(mp_image, timestamp_ms)
         return result
 
-        
+
 cam = Camera(idx=5, width=1280, height=720)
 
 previous_time = time.time()
