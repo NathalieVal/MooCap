@@ -31,6 +31,10 @@ class Camera:
         self.cap.release()
         cv2.destroyAllWindows()
 
+class PoseTracker:
+    def __init__(self, model_path):
+        self.options = vision.PoseLandmarkerOptions()
+        self.landmarker = vision.PoseLandmarker.create_from_options(self.options)
         
 cam = Camera(idx=5, width=1280, height=720)
 
