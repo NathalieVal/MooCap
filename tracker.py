@@ -1,6 +1,9 @@
 import cv2
 import mediapipe as mp
 
+from mediapipe.tasks.python import vision
+from mediapipe.tasks.python.core.base_options import BaseOptions
+
 
 # What do I need for motion capture?
 # 1) Camera input
