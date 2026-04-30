@@ -36,6 +36,12 @@ def draw_pose(frame, landmarks, visibility_threshold=0.5):
             cv2.circle(frame, pt, 4, (0, 255, 0), -1)
 
     # 2) DRAW BONES
+    for start_idx, end_idx in POSE_CONNECTIONS:
+        if (start_idx < len(points)
+            and end_idx < len(points)
+            and points[start_idx] is not None
+            and points [end_idx] is not None ):
+            cv2.line(frame, points[start_idx], points[end_idx], (0, 0, 255), 2)
 
 
     return points
