@@ -8,10 +8,18 @@ from mediapipe.tasks.python.core.base_options import BaseOptions
 
 # 1) Camera input
 class Camera:
-    def __init__(self, idx=5):
+    def __init__(self, idx=0, width=None, height=None):
         self.cap = cv2.VideoCapture(idx)
         if not self.cap.isOpened():
             raise RuntimeError("Could not start webcam")
+        
+        if width:
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+
+        if height:
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+
+
         
     def read(self):
         ret, frame = self.cap.read()
@@ -24,7 +32,7 @@ class Camera:
         cv2.destroyAllWindows()
 
         
-cam = Camera()
+cam = Camera(idx=5, width=1280, height=720)
 
 previous_time = time.time()
 
