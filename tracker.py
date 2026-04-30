@@ -56,6 +56,8 @@ cam = Camera(idx=5, width=1280, height=720)
 
 previous_time = time.time()
 
+tracker = PoseTracker("pose_landmarker_full.task")
+
 while True:
     frame = cam.read()
     if frame is None:
