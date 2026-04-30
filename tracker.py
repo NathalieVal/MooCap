@@ -24,35 +24,29 @@ class Camera:
         cv2.destroyAllWindows()
 
         
-cap = cv2.VideoCapture(5)
+cam = Camera()
 
-if not cap.isOpened():
-    raise RuntimeError("Could not start webcam")
-
-previous_time = 0
+previous_time = time.time()
 
 while True:
-    ret, frame = cap.read()
-    if not ret:
+    frame = cam.read()
+    if frame is None:
         break
 
     # FPS calculation
     current_time = time.time()
-    fps = 1/ (current_time - previous_time) if previous_time != 0 else 0
+    fps = 1/ (current_time - previous_time)
     previous_time = current_time
 
-
-    # FPS on screen
     cv2.putText(frame, f"{fps:.2f}", (10, 30),
-                cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+                cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
-    cv2.imshow("Webcam Test", frame)
+    cv2.imshow("Camera", frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
-cap.release()
-cv2.destroyAllWindows()
+cam.release()
 
 # What do I need for motion capture?
 # 2) Camera frames into MediaPipe
