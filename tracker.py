@@ -15,7 +15,6 @@ POSE_CONNECTIONS = frozenset([
     (24, 26), (26, 28), # Right leg
 ])
 
-# Will probably add missing connections later
 
 def draw_pose(frame, landmarks, visibility_threshold=0.5):
     h, w, _ = frame.shape
@@ -32,9 +31,14 @@ def draw_pose(frame, landmarks, visibility_threshold=0.5):
             y = int(lm.y * h)
             points.append((x, y))
 
+    for pt in points:
+        if pt is not None:
+            cv2.circle(frame, pt, 4, (0, 255, 0), -1)
 
     # 2) DRAW BONES
 
+
+    return points
 
 # Camera Input
 class Camera:
@@ -107,8 +111,12 @@ while True:
 
     # Print landmarks
     if result.pose_landmarks:
-        for i, lm in enumerate(result.pose_landmarks[0]):
-            print(i, lm.x, lm.y, lm.z)
+        landmarks = result.pose_landmarks[0]
+        
+        points = draw_pose(frame, landmarks)
+
+        # for i, lm in enumerate(result.pose_landmarks[0]):
+        #     print(i, lm.x, lm.y, lm.z)
 
     # FPS drawing
     cv2.putText(frame, f"{fps:.2f}", (10, 30),
