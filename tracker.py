@@ -18,6 +18,22 @@ POSE_CONNECTIONS = frozenset([
 ])
 
 
+BONES = {
+    "upper_arm.L": {11, 13},
+    "lower_arm.L": {13, 15},
+
+    "upper_arm.R": {12, 14},
+    "lower_arm.R": {14, 16},
+
+    "upper_leg.L": {23, 25},
+    "lower_leg.L": {25, 27},
+
+    "upper_leg.R": {24, 26},
+    "lower_leg.R": {26, 28},
+
+    "spine": {24, 12}
+}
+
 def draw_pose(frame, landmarks, visibility_threshold=0.5):
     h, w, _ = frame.shape
 
