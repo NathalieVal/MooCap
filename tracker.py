@@ -1,6 +1,7 @@
 import cv2
 import time
 import mediapipe as mp
+import numpy as np
 
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.core.base_options import BaseOptions
@@ -33,6 +34,24 @@ BONES = {
 
     "spine": {24, 12}
 }
+
+
+def get_bone_vectors(landmarks):
+    bone_vectors = []
+
+    for bone, idx in BONES.items():
+        p = landmarks[idx["parent"]]
+        c = landmarks[idx["child"]]
+
+        vec = np.array([c.x - p.x, c.y - p.y, c.z - p.z])
+
+        norm = np.linalg.norm(vec)
+        if norm > 0:
+            vec = vec / norm
+        
+        bone_vectors[bone] = vec
+
+    return bone_vectors
 
 def draw_pose(frame, landmarks, visibility_threshold=0.5):
     h, w, _ = frame.shape
