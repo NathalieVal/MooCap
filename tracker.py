@@ -5,8 +5,17 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.core.base_options import BaseOptions
 
+POSE_CONNECTIONS = frozenset([
+    (11, 13), (13, 15), # Left arm
+    (12, 14), (14, 16), #Right arm
+    (11, 12), # Shoulders
+    (23, 24), # Hips
+    (11, 23), (12, 24), # Torso
+    (23, 25), (25, 27), # Left leg
+    (24, 26), (26, 28), # Right leg
+])
 
-# 1) Camera input
+# Camera Input
 class Camera:
     def __init__(self, idx=0, width=None, height=None):
         self.cap = cv2.VideoCapture(idx)
@@ -31,6 +40,7 @@ class Camera:
         self.cap.release()
         cv2.destroyAllWindows()
 
+# Body Tracking
 class PoseTracker:
     def __init__(self, model_path):
         self.options = vision.PoseLandmarkerOptions(
