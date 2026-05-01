@@ -1,49 +1,49 @@
 # MooCap
 
 ## Repository
-https://github.com/NathalieVal/MooCap
+https://github.com/NathalieVal/PANTONEColorRandomizer
 
 
 ## Description
-A relatively simple to use and set up motion tracking software. Usful for recording character movement for 3D animation.
+Fun and charming color randomizer based on PANTONE's selection of paint colors.
 
 ## Features
 - Friendly UI:
-    - The program should be easy and visually appealing to use.
-- Hand Tracking:
-	- The program will capture points of the hand and transfer it over to the 3D rig.
-- Body Tracking:
-    - The program will create points on the body and draw a skeleton that will then be transfered over to the rig in the 3D software.
-- Face Tracking:
-	- The program will capture points on the face and will transfer it over to the 3D rig. If there are predetermined expressions on the character, and the actor is matching those expressions the program will try to identify the expression and create it on the 3D model.
+    - There'll be helpful text that'll explain how to work the program. The function will be relatively simple with the program being click-oriented.
+- Charming Visuals:
+    - The idea is that you find yourself paint store lookng at a wall of swatches. The visuals will be pixelated. 
+    It'll be almost as though the use was playing a relaxing, chill game like "Unpacking" or "Stardew Valley"
+    A friendly shopkeep will keep you company throughout it all.
+- Relaxed Audio:
+    - Since we're technically in a store, isn't it appropriate for there to be nice music and sound effects to accompany the experience?
+- Ability to Randomize up to Three Colors:
+    - Once the user has randomized one color, they'll have the option to return to the main wall of swatches where they can look at the selection, or randomize up to two more colors.
 
 ## Challenges
-- Timeline. How much can be done in the remaining weeks.
-- What new frameworks will I need to learn? 
-- How will I connect the output produced by the program and input it into programs like Maya and Blender?
-- Splitting this project into 4 parts:
-    1. Motion Capture
-    2. Receiving Output
-    3. Translating Output Into Maya/ Blender
-    4. Making it look pretty.
+- Much shorter time frame due to me scrapping my initial proposal (giving myself about 9 days)
+- Setting up UI and getting everything to work properly.
+- Potentially setting up animations.
 
 ## Outcomes
 Ideal Outcome:
-- Program is able to capture and transfer hand, body, and face movement onto a 3D model.
+- Program is not only fully functional, but charming to look at and use.
 
 Minimal Viable Outcome:
-- Alongside a UI that allows for efficient and easy use, the program is able to transfer bare body movement to a 3D model.
+- Static graphics but fully funtioning color randomizer. WORST CASE SCENARIO: charming aesthetics are replaced with a mundane, dark UI.
 
 ## Milestones
 
-- Week 1
-  1. Goal 1: Set up hand, body, and face capture w/ course video: https://www.youtube.com/watch?v=01sAkU_NvOY
-  2. Goal 2: Get it all to run at the same time.
+- May 3rd:
+  1. Goal 1: Have main UI prototyped.
+  2. Goal 2: Color picker is able to get up to three colors from Pantone's selection.
 
-- Week 2
-  1. Goal 1: Understand where output is stored and how it can be sent to Maya/ Blender.
-  2. Goal 2: Find a working rig and figure out the requirements of what's needed to work with each level of the program (rig wise).
+- May 6th:
+  1. Goal 1: Create simple visual assets and collect audio required for final product.
+  2. Goal 2: Begin implementing assets.
 
-- Week N (Final)
-  1. Goal 1: Create a functional and satisfying UI (includes a camera input)
-  2. Goal 2: Make sure enough information can be found within the project/ github where a new user can learn how to use the program.
+- May 9th:
+  1. Goal 1: Have final assets implemented.
+  2. Goal 2: Find bugs or glitches while playing program. TEST RUN. 
+
+- May 11th:
+  1. Final upload. There are two days between my personal deadline and the actualy deadline. Do NOT rely on this.
