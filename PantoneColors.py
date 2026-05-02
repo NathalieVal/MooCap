@@ -13,10 +13,12 @@ clock = pygame.time.Clock()
 
 from pygame.locals import *
 pygame.init() # Initiates program
+pygame.display.set_caption("Color Randomizer")
 
-WINDOW_SIZE = (400, 400)
+monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_w]
+screen  = pygame.display.set_mode((500, 500), pygame.RESIZABLE) # Initiates window
 
-screen  = pygame.display.set_mode(WINDOW_SIZE, 0, 32) # Initiates window
+fullscreen = False
 
 while True:
 
@@ -24,6 +26,23 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+        if event.type == VIDEORESIZE:
+            if not fullscreen:
+                screen  = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE) # Initiates window
+
+
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                pygame.quit()
+                sys.exit()  
+
+            if event.key == K_f:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode((monitor_size), pygame.FULLSCREEN)
+                else:
+                    screen  = pygame.display.set_mode((screen.get_width, screen.get_height), pygame.RESIZABLE)
 
     pygame.display.update()
     clock.tick(60)
