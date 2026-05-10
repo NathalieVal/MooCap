@@ -26,12 +26,22 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 # Load Button Images
-play_img = pygame.image.load('Buttons/Play.png').convert_alpha()
-randomcolor_img = pygame.image.load('Buttons/Random_Color.png').convert_alpha()
+play_img = pygame.image.load('Gui/Buttons/Play.png').convert_alpha()
+randomcolor_img = pygame.image.load('Gui/Buttons/Random_Color.png').convert_alpha()
 
-about_img = pygame.image.load('Buttons/About.png').convert_alpha()
+about_img = pygame.image.load('Gui/Buttons/About.png').convert_alpha()
 
-exit_img = pygame.image.load('Buttons/Exit.png').convert_alpha()
+exit_img = pygame.image.load('Gui/Buttons/Exit.png').convert_alpha()
+
+# Load Other GUI Images
+card_img = pygame.image.load('Gui/Card/Card.png').convert_alpha()
+
+# Get Rect Surrounding Images
+card_rect = card_img.get_rect()
+card_rect.center = (960, 540)
+
+color_rect = pygame.Rect(0, 0, 200, 200)
+color_rect.center = card_rect.center
 
 # Create Button Instances
 play_button = button.Button(100, 200, play_img, 1)
@@ -54,8 +64,10 @@ about_data = [
 about_text = [font.render(line, True, (255, 255, 255)) for line in about_data]
 
 
-
 # Game Loop
+random_color = (255, 255, 255)
+color_text = []
+
 run = True
 while run:
 
@@ -94,7 +106,7 @@ while run:
                 random_row = random.choice(list(reader))
 
             name, code, r, g, b = random_row
-            random_color = (int(r), int(g), int(b))
+            random_color = int(r), int(g), int(b)
 
             print(name, random_color)
 
@@ -103,13 +115,12 @@ while run:
                 font.render(f"{random_color}", True, (255, 255, 255)),
             ]
 
+        screen.blit(card_img, card_rect)
+
         for i, surface in enumerate(color_text):
             screen.blit(surface, (100, 100 + i * 50))
 
-        pygame.draw.rect(screen, random_color, (500, 500, 200, 200))
-
-
-
+        pygame.draw.rect(screen, random_color, color_rect)
 
 
     # Event Handler
