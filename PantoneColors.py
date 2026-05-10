@@ -40,8 +40,11 @@ card_img = pygame.image.load('Gui/Card/Card.png').convert_alpha()
 card_rect = card_img.get_rect()
 card_rect.center = (960, 540)
 
-color_rect = pygame.Rect(0, 0, 200, 200)
-color_rect.center = card_rect.center
+color_rect = pygame.Rect(0, 0, 455, 455)
+color_rect.center = (
+    card_rect.centerx,
+    card_rect.centery - 70
+)
 
 # Create Button Instances
 play_button = button.Button(100, 200, play_img, 1)
@@ -111,16 +114,17 @@ while run:
             print(name, random_color)
 
             color_text = [
-                font.render(name, True, (255, 255, 255)),
-                font.render(f"{random_color}", True, (255, 255, 255)),
+                font.render(name, True, (0, 0, 0)),
+                font.render(f"{random_color}", True, (0, 0, 0)),
             ]
 
         screen.blit(card_img, card_rect)
 
-        for i, surface in enumerate(color_text):
-            screen.blit(surface, (100, 100 + i * 50))
-
         pygame.draw.rect(screen, random_color, color_rect)
+
+        for i, surface in enumerate(color_text):
+            screen.blit(surface, (card_rect.left + 20, 
+                                  card_rect.bottom - 140 + i * 50))
 
 
     # Event Handler
