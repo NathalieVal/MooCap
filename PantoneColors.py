@@ -37,20 +37,31 @@ exit_img = pygame.image.load('Buttons/Exit.png').convert_alpha()
 
 # Button Class
 class Button():
-    def __init__(self, x , y, image):
-        self.image = image
+    def __init__(self, x , y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
     def draw(self):
+
+        # Get mouse position
+        position = pygame.mouse.get_pos()
+        print(position)
+
+        # Check mouseover and clicked positions
+        if self.rect.collidepoint(position):
+            print("HOVER")
+
         # Draw button on screen
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
 # Create Button Instances
-play_button = Button(100, 200, play_img)
-about_button = Button(100, 400, about_img)
-exit_button = Button(100, 600, exit_img)
+play_button = Button(100, 200, play_img, 1)
+about_button = Button(100, 400, about_img, 1)
+exit_button = Button(100, 600, exit_img, 1)
 
 
 # Game Loop
