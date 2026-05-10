@@ -17,9 +17,18 @@ pygame.display.set_caption("Color Randomizer")
 
 screen  = pygame.display.set_mode((1920, 1080)) # Initiates window
 
+# Game Variables
+game_menu = False
+
+# Font(s)
+font = pygame.font.SysFont("arialblack", 40)
+
+# Font color(s)
+text_col = (255, 255, 255)
+
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
-    screen.blit(img, x, y)
+    screen.blit(img, (x, y))
 
 
 # Game Loop
@@ -27,7 +36,13 @@ run = True
 while run:
 
     screen.fill((0, 0, 0))
-
+    
+    # Check if menu button has been pressed
+    if game_menu == True:
+        pass
+        # Display menu
+    else: 
+        draw_text("Press ESC to return to menu", font, text_col, 160, 250)
 
     # Event Handler
     for event in pygame.event.get():
@@ -38,9 +53,8 @@ while run:
 
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
-                pygame.quit()
-                sys.exit()  
-                run = False
+                game_menu = True
+                print("Game Menu")
 
     pygame.display.update()
     clock.tick(60)
