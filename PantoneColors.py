@@ -56,7 +56,6 @@ about_text = [font.render(line, True, (255, 255, 255)) for line in about_data]
 
 
 # Game Loop
-random_color = None
 run = True
 while run:
 
@@ -72,31 +71,36 @@ while run:
             
         if about_button.draw(screen) == True:
             print("About")
-            game_state = "options"
+            game_state = "about"
 
         elif exit_button.draw(screen) == True:
             print("Exit")
             run = False
 
-    if game_state == "options":
+
+    # ABOUT
+    if game_state == "about":
         for i, surface in enumerate(about_text):
             screen.blit(surface, (100, 100 + i * 50))
 
+
+    # PLAY
     elif game_state == "play":
         draw_text("Press ESC to return to menu", font, text_col, 160, 900)  
-        if randomcolor_button.draw(screen) == True and random_color is None:
-            with open('colors.csv', 'r') as f:
+
+        if randomcolor_button.draw(screen):
+            with open('PantoneRGB.csv', 'r') as f:
                 reader = csv.reader(f)
-                random_color = random.choice(list(reader))
+                random_row = random.choice(list(reader))
 
-            name, code, r, g, b = random_color
-            rgb = (int(r), int(g), int(b))
+            name, code, r, g, b = random_row
+            random_color = (int(r), int(g), int(b))
+            
+            print(name, code, random_color)
+
+        pygame.draw.rect(screen, random_color, (500, 500, 200, 200))
 
 
-            print(name, code, rgb)
-            pygame.draw.rect(screen, rgb, (500, 500, 200, 200))
-
-            random_color = None
 
 
 
@@ -110,7 +114,7 @@ while run:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
 
-                if game_state == "play":
+                if game_state == "play" or "about":
                     game_state = "main"
 
 
