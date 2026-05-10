@@ -95,8 +95,16 @@ while run:
 
             name, code, r, g, b = random_row
             random_color = (int(r), int(g), int(b))
-            
-            print(name, code, random_color)
+
+            print(name, random_color)
+
+            color_text = [
+                font.render(name, True, (255, 255, 255)),
+                font.render(f"{random_color}", True, (255, 255, 255)),
+            ]
+
+        for i, surface in enumerate(color_text):
+            screen.blit(surface, (100, 100 + i * 50))
 
         pygame.draw.rect(screen, random_color, (500, 500, 200, 200))
 
