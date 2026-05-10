@@ -7,7 +7,9 @@
     MAY 3RD:
     Figur out color randomizer system ( I have an idea in my head w/ a CSV file)"""
 
-import pygame, sys
+import pygame
+import sys
+import button
 
 clock = pygame.time.Clock()
 
@@ -35,42 +37,10 @@ play_img = pygame.image.load('Buttons/Play.png').convert_alpha()
 about_img = pygame.image.load('Buttons/About.png').convert_alpha()
 exit_img = pygame.image.load('Buttons/Exit.png').convert_alpha()
 
-# Button Class
-class Button():
-    def __init__(self, x , y, image, scale):
-        width = image.get_width()
-        height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        self.clicked = False
-
-    def draw(self):
-
-        action = False
-        # Get mouse position
-        position = pygame.mouse.get_pos()
-
-        # Check mouseover and clicked positions
-        if self.rect.collidepoint(position):
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                self.clicked = True
-                action = True
-
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
-            
-
-        # Draw button on screen
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-        
-        return action
-
-
 # Create Button Instances
-play_button = Button(100, 200, play_img, 1)
-about_button = Button(100, 400, about_img, 1)
-exit_button = Button(100, 600, exit_img, 1)
+play_button = button.Button(100, 200, play_img, 1)
+about_button = button.Button(100, 400, about_img, 1)
+exit_button = button.Button(100, 600, exit_img, 1)
 
 
 # Game Loop
@@ -79,13 +49,13 @@ while run:
 
     screen.fill((0, 0, 0))
 
-    if play_button.draw() == True:
+    if play_button.draw(screen) == True:
         print("Play")
         
-    if about_button.draw() == True:
+    if about_button.draw(screen) == True:
         print("About")
 
-    if exit_button.draw() == True:
+    if exit_button.draw(screen) == True:
         print("Exit")
         run = False
 
