@@ -1,6 +1,8 @@
 import pygame
 import sys
 import button
+import csv
+import random
 
 clock = pygame.time.Clock()
 
@@ -11,7 +13,6 @@ pygame.display.set_caption("Color Randomizer")
 screen  = pygame.display.set_mode((1920, 1080)) # Initiates window
 
 # Game Variables
-game_menu = True
 game_state = "main"
 
 # Font(s)
@@ -26,12 +27,17 @@ def draw_text(text, font, text_col, x, y):
 
 # Load Button Images
 play_img = pygame.image.load('Buttons/Play.png').convert_alpha()
+randomcolor_img = pygame.image.load('Buttons/Random_Color.png').convert_alpha()
+
 about_img = pygame.image.load('Buttons/About.png').convert_alpha()
+
 exit_img = pygame.image.load('Buttons/Exit.png').convert_alpha()
 
 # Create Button Instances
 play_button = button.Button(100, 200, play_img, 1)
 about_button = button.Button(100, 400, about_img, 1)
+randomcolor_button = button.Button(100, 200, randomcolor_img, 1)
+
 exit_button = button.Button(100, 600, exit_img, 1)
 
 # About data
@@ -48,36 +54,43 @@ about_data = [
 about_text = [font.render(line, True, (255, 255, 255)) for line in about_data]
 
 # Game Loop
+
+random_color = None
 run = True
 while run:
 
     screen.fill((0, 0, 0))
 
-    # Check if menu button has been pressed
-    if game_menu == True:
-
-        #Check menu state
-        if game_state == "main":
+    #Check menu state
+    if game_state == "main":
+        
+        # Draw menu buttons
+        if play_button.draw(screen) == True:
+            game_state = "play"
+            print("Play")
             
-            # Draw menu buttons
-            if play_button.draw(screen) == True:
-                game_state = "play"
-                print("Play")
-                
-            if about_button.draw(screen) == True:
-                print("About")
-                game_state = "options"
+        if about_button.draw(screen) == True:
+            print("About")
+            game_state = "options"
 
-            if exit_button.draw(screen) == True:
-                print("Exit")
-                run = False
+        elif exit_button.draw(screen) == True:
+            print("Exit")
+            run = False
 
-        if game_state == "options":
-            for i, surface in enumerate(about_text):
-                screen.blit(surface, (100, 100 + i * 50))
+    if game_state == "options":
+        for i, surface in enumerate(about_text):
+            screen.blit(surface, (100, 100 + i * 50))
 
-        if game_state == "play":
-            draw_text("Press ESC to return to menu", font, text_col, 160, 250)
+    elif game_state == "play":
+        draw_text("Press ESC to return to menu", font, text_col, 160, 900)  
+        if randomcolor_button.draw(screen) == True and random_color is None:
+            with open('colors.csv', 'r') as f:
+                reader = csv.reader(f)
+                random_color = random.choice(list(reader))
+            print(random_color)
+            random_color = None
+
+
 
     # Event Handler
     for event in pygame.event.get():
@@ -89,7 +102,7 @@ while run:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
 
-                if game_state == "play" or "options":
+                if game_state == "play":
                     game_state = "main"
 
 
