@@ -17,15 +17,22 @@ class SceneManager:
         self.offset_x = 0
         self.speed = 50
 
+        self.progress = 0
+        self.direction = -1
+
     def set_scene(self, scene):
         if self.current_scene is None:
             self.current_scene = scene
             self. state = "idle"
-            self.offset_x = 0
-        else:
-            self.next_scene = scene
-            self.state = "out"
-            self.offset_x = 0
+            return
+        
+        self.next_scene = scene
+        self.state = "transition"
+        self.progress = 0
+        self.direction = -1
+
+    def ease(self, t):
+        return t * t * (3 - 2 * t)
 
     def handle_events(self, events):
         if self.current_scene:
@@ -37,29 +44,45 @@ class SceneManager:
         
         if self.state == "idle":
             self.current_scene.update()
+            return
 
-        elif self.state == "out":
-            self.offset_x -= self.speed
-            
-            if abs(self.offset_x) >= 1920:
+        if self.state == "transition":
+            self.progress += 0.02 # Speed
+
+            if self.progress >= 1:
+                self.progress = 1
                 self.current_scene = self.next_scene
                 self.next_scene = None
-                self.offset_x = -1920
-                self.state = "in"
+                self.state = "fade_in"
+                return 
 
-        elif self.state == "in":
-            self.offset_x += self.speed
+        if self.state == "fade_in":
+            self.progress -= 0.03 # Speed
 
-            if self.offset_x >= 0:
-                self.offset_x = 0
+            if self.progress <= 0:
+                self.progress = 0
                 self.state = "idle"
-
+            
     def draw(self, screen):
-        if self.state in ["idle", "out"]:
-            self.current_scene.draw(screen, self.offset_x)
+        if self.current_scene is None:
+            return
+        
+        t = self.ease(self.progress)
 
-        if self.state == "in":
-            self.current_scene.draw(screen, self.offset_x)
+        offset = 0
+        alpha = 0
+
+        if self.state == "transition":
+            offset = -int(t * 1920)
+            alpha = int(t * 255)
+
+        self.current_scene.draw(screen, offset)
+
+        if self.state != "idle":
+            fade = pygame.Surface((1920, 1080))
+            fade.fill((255, 255, 255))
+            fade.set_alpha(alpha)
+            screen.blit(fade, (0, 0))
 
 
 class Game:
