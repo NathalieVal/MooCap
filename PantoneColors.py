@@ -70,17 +70,19 @@ class SceneManager:
         t = self.ease(self.progress)
 
         offset = 0
-        alpha = 0
 
         if self.state == "transition":
             offset = -int(t * 1920)
-            alpha = int(t * 255)
+
+        elif self.state =="fade_in":
+            alpha = -int((1 - t) * 1920)
 
         self.current_scene.draw(screen, offset)
 
         if self.state != "idle":
             fade = pygame.Surface((1920, 1080))
             fade.fill((255, 255, 255))
+            alpha = int(abs(t - 0.5) * 2 * 255)
             fade.set_alpha(alpha)
             screen.blit(fade, (0, 0))
 
