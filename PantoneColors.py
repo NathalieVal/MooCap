@@ -182,7 +182,7 @@ class Intro(Scene):
         self.timer = 0
 
         self.fade_in_time = 120
-        self.hold_time = 60
+        self.hold_time = 80
         self.fade_out_time = 120
 
         self.total_time = (self.fade_in_time + self.hold_time + self.fade_out_time)
@@ -253,6 +253,19 @@ class MainMenu(Scene):
 
         if self.exit_button.draw(screen) == True:
             self.game.running = False
+
+
+class ColorCard:
+
+
+    def handle_events(self, events):
+        pass
+
+    def update(self):
+        pass
+
+    def draw(self, screen, offset_x=0):
+        pass
 
 
 class Randomizer(Scene):
