@@ -1,7 +1,7 @@
 import pygame
 
 class Button():
-    def __init__(self, x , y, image, image_hover, scale):
+    def __init__(self, x , y, image, image_hover, scale, click_sound=None):
         self.base_image = image
         self.base_hover_image = image_hover
 
@@ -18,6 +18,8 @@ class Button():
 
         self.clicked = False
         self.offset_x = 0 
+
+        self.click_sound = click_sound
 
     def get_scaled_image(self):
         if self.hovered:
@@ -46,6 +48,10 @@ class Button():
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 action = True
+
+                if self.click_sound:
+                    self.click_sound.set_volume(0.2)
+                    self.click_sound.play()
 
         else: 
             self.hovered = False

@@ -7,6 +7,7 @@ import button
 
 
 pygame.init()
+pygame.mixer.init()
 
 class SceneManager:
     def __init__(self):
@@ -111,7 +112,7 @@ class Main:
         pygame.display.set_caption("Color Randomizer")
 
         # Loading Asset Images
-        # self.intro_img = pygame.image.load('Gui/Intro.png').convert_alpha()
+        self.logo_img = pygame.image.load('Gui/Intro.png').convert_alpha()
 
         self.play_img = pygame.image.load('Gui/Buttons/Play.png').convert_alpha()
         self.playhover_img = pygame.image.load('Gui/Buttons/Play_HOVER.png').convert_alpha()
@@ -124,10 +125,21 @@ class Main:
 
         self.about_img = pygame.image.load('Gui/Buttons/About.png').convert_alpha()
         self.abouthover_img = pygame.image.load('Gui/Buttons/About_HOVER.png').convert_alpha()
+
         self.credits_img = pygame.image.load('Gui/Credits.png').convert_alpha()
+        self.meme_img = pygame.image.load('Gui/Meme.png').convert_alpha()
 
         self.exit_img = pygame.image.load('Gui/Buttons/Exit.png').convert_alpha()
         self.exithover_img = pygame.image.load('Gui/Buttons/Exit_HOVER.png').convert_alpha()
+
+        #SFX 
+        pygame.mixer.music.load('SFX/BackgroundMusic.mp3')
+        pygame.mixer.music.set_volume(0.4)
+        pygame.mixer.music.play(-1)
+
+        self.click_sound = pygame.mixer.Sound('SFX/ButtonPress.mp3')
+        self.card_sound = pygame.mixer.Sound('SFX/Card.mp3')
+        
 
         self.card_img = pygame.image.load('Gui/Card/Card.png').convert_alpha()
 
@@ -180,8 +192,8 @@ class Intro(Scene):
     def __init__(self, game):
         self.game = game
 
-        # self.logo = game.intro_img
-        # self.logo_rect = self.logo.get_rect(center=(960, 540))
+        self.logo_img = game.logo_img
+        self.logo_rect = self.logo_img.get_rect(center=(625, 540))
 
         self.timer = 0
 
@@ -191,16 +203,20 @@ class Intro(Scene):
 
         self.total_time = (self.fade_in_time + self.hold_time + self.fade_out_time)
 
+        self.finished = False
+
     def handle_events(self, events):
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.finished):
+                    self.finished = True
                     self.game.scene_manager.set_scene(self.game.menu_scene)
 
 
     def update(self):
         self.timer += 1
 
-        if self.timer >= self.total_time:
+        if self.timer >= self.total_time and not self.finsihed:
+            self.finished = True
             self.game.scene_manager.set_scene(self.game.menu_scene)
 
     def draw(self, screen, offset_x=0):
@@ -220,24 +236,28 @@ class Intro(Scene):
             alpha = int(255 - (self.fade_out_timer / self.fade_out_time) * 255)
 
 
-        self.logo_placeholder = pygame.Surface ((200, 200))
-        self.logo_placeholder.set_colorkey((0, 0, 0))
-        self.logo_placeholder.set_alpha(alpha)
-        pygame.draw.circle(self.logo_placeholder, (0, 0, 255), (100, 100), 100)
-        screen.blit(self.logo_placeholder, (625, 540))
+        # self.logo_placeholder = pygame.Surface ((200, 200))
+        # self.logo_placeholder.set_colorkey((0, 0, 0))
+        # self.logo_placeholder.set_alpha(alpha)
+        # pygame.draw.circle(self.logo_placeholder, (0, 0, 255), (100, 100), 100)
+        # screen.blit(self.logo_placeholder, (625, 540))
 
-        # self.logo.set_alpha(alpha)
+        intro_logo = self.logo_img.copy()
+        intro_logo.set_alpha(alpha)
 
-        # screen.blit(self.logo, self.logo_rect)
+        screen.blit(intro_logo, self.logo_rect)
 
 
 class MainMenu(Scene):
     def __init__(self, game):
         self.game = game
 
-        self.play_button = button.Button(300, 340, game.play_img, game.playhover_img, 1)
-        self.about_button = button.Button(300, 540, game.about_img, game.abouthover_img, 1)
-        self.exit_button = button.Button(300, 740, game.exit_img, game.exithover_img, 1)   
+        self.play_button = button.Button(300, 340, game.play_img, game.playhover_img, 1, game.click_sound)
+        self.about_button = button.Button(300, 540, game.about_img, game.abouthover_img, 1, game.click_sound)
+        self.exit_button = button.Button(300, 740, game.exit_img, game.exithover_img, 1, game.click_sound)   
+
+        self.logo_img = game.logo_img
+        self.logo_rect = self.logo_img.get_rect(center=(850, 540))
 
     def handle_events(self, event):
         pass
@@ -247,6 +267,8 @@ class MainMenu(Scene):
     
     def draw(self, screen, offset_x=0):
         screen.fill('white')
+
+        screen.blit(self.logo_img, self.logo_rect)
 
         self.play_button.offset_x = offset_x
         self.about_button.offset_x = offset_x
@@ -306,12 +328,14 @@ class ColorCard:
                 
             screen.blit(surface, position)
 
+
+
 class Randomizer(Scene):
     def __init__(self, game):
         self.game = game
 
-        self.randomcolor_button = button.Button(300, 440, game.randomcolor_img, game.randomcolorhover_img, 1)
-        self.return_button = button.Button(300, 640, game.return_img, game.returnhover_img, 1)
+        self.randomcolor_button = button.Button(300, 440, game.randomcolor_img, game.randomcolorhover_img, 1, game.click_sound)
+        self.return_button = button.Button(300, 640, game.return_img, game.returnhover_img, 1, game.click_sound)
 
         self.card_img = game.card_img
         self.cards = []
@@ -371,6 +395,9 @@ class Randomizer(Scene):
 
         self.cards.append(self.new_card)
 
+        self.game.card_sound.set_volume(0.7)
+        self.game.card_sound.play()
+
         for i, card in enumerate(self.cards):
             card.target_y = 475 + i * 18
 
@@ -381,8 +408,11 @@ class Randomizer(Scene):
 class About(Scene):
     def __init__(self, game):
         self.game = game
+
         self.credits_img = game.credits_img
-        self.return_button = button.Button(300, 640, game.return_img, game.returnhover_img, 1)
+        self.meme_img = game.meme_img
+
+        self.return_button = button.Button(300, 640, game.return_img, game.returnhover_img, 1, game.click_sound)
 
     def handle_events(self, event):
         pass
@@ -394,6 +424,7 @@ class About(Scene):
         screen.fill('white')
         
         screen.blit(self.credits_img, (125, 200))
+        screen.blit(self.meme_img, (600, 400))
 
         self.return_button.offset_x = offset_x
 
