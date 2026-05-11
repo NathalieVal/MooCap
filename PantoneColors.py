@@ -2,6 +2,7 @@ import pygame
 import sys
 import csv
 import random
+import webbrowser
 import button
 
 
@@ -191,10 +192,9 @@ class Intro(Scene):
 
     def handle_events(self, events):
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.game.scene_manager.set_scene(self.game.menu_scene)
-                    pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
+
 
     def update(self):
         self.timer += 1
@@ -262,17 +262,23 @@ class MainMenu(Scene):
 
 
 class ColorCard:
-    def __init__(self, image, color, color_text, target_positon):
+    def __init__(self, image, color, color_text, color_name, target_positon):
         self.image = image
         self.color = color
+
         self.color_text = color_text
+        self.color_name = color_name
 
         self.x, self.y = target_positon[0], -700
         self.target_x, self.target_y = target_positon
 
         self.rect = self.image.get_rect(center=(self.x, self.y))
-
         self.color_rect = pygame.Rect(0, 0, 455, 455)
+
+        self.text_rects = []
+
+
+        self.link = f"https://www.pantone.com/color-finder/{color_name[0].replace(' ', '-')}"
 
     def handle_events(self, events):
         pass
@@ -284,15 +290,20 @@ class ColorCard:
     def draw(self, screen):
         self.color_rect.center = (self.rect.centerx, self.rect.centery - 70)
 
-        image = self.image.copy()
-        screen.blit(image,self.rect)
-
+        screen.blit(self.image,self.rect)
         pygame.draw.rect(screen, self.color, self.color_rect)
 
-        for i, surface in enumerate(self.color_text):
-            screen.blit(surface, (self.rect.left + 20,
-                        self.rect.bottom - 140 + i * 50))
+        self.text_rects = []
+        mouse_position = pygame.mouse.get_pos()
 
+        for i, surface in enumerate(self.color_text):
+            position = (self.rect.left + 20,
+                        self.rect.bottom - 140 + i * 50)
+            
+            rect = surface.get_rect(topleft=position)
+            self.text_rects.append(rect)
+
+            screen.blit(surface, position)
 
 class Randomizer(Scene):
     def __init__(self, game):
@@ -305,8 +316,15 @@ class Randomizer(Scene):
         self.cards = []
         
     def handle_events(self, events):
+        mouse_position = pygame.mouse.get_pos()
+
         for event in events:
-            pass
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for card in reversed(self.cards):
+                        for rect in card.text_rects:
+                            if rect.collidepoint(mouse_position):
+                                webbrowser.open(card.link)
+                                return
 
     def update(self):
         for card in self.cards:
@@ -337,14 +355,17 @@ class Randomizer(Scene):
         name, code, r, g, b = random_row
         self.random_color = int(r), int(g), int(b)
 
+        self.text_data = [f"PANTONE {name}",
+                          f"{self.random_color}"]
+
         self.text_color = [
-            self.game.font.render(f"PANTONE {name}", True, 'black'),
-            self.game.font.render(f"{self.random_color}", True, 'black'),
-        ]
+            self.game.font.render(self.text_data[0], True, 'black'), 
+            self.game.font.render(self.text_data[1], True, 'black')]
 
         self.new_card = ColorCard(self.card_img, 
                                 self.random_color, 
                                 self.text_color,
+                                [name, name],
                                 (850, 475))
 
         self.cards.append(self.new_card)
