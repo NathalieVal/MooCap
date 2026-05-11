@@ -182,7 +182,11 @@ class Intro(Scene):
         self.total_time = (self.fade_in_time + self.hold_time + self.fade_out_time)
 
     def handle_events(self, events):
-        pass
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    print("SKIP!")
+                    self.game.scene_manager.set_scene(self.game.menu_scene)
 
     def update(self):
         self.timer += 1
