@@ -19,6 +19,7 @@ class Button():
         self.rect = self.image.get_rect(center=(x, y))
 
         self.clicked = False
+        self.offset_x = 0 
 
     def get_scaled_image(self):
         if self.hovered:
@@ -40,7 +41,7 @@ class Button():
         position = pygame.mouse.get_pos()
 
         # Check mouseover and clicked positions
-        if self.rect.collidepoint(position):
+        if self.rect.collidepoint(position[0] - self.offset_x, position[1]):
             self.hovered = True
             self.target_scale = self.base_scale * 1.1
 
@@ -65,6 +66,6 @@ class Button():
             
 
         # Draw button on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
+        surface.blit(self.image, (self.rect.x + self.offset_x, self.rect.y))
         
         return action

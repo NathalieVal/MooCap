@@ -6,17 +6,74 @@ import random
 
 pygame.init()
 
+
+class SceneManager:
+    def __init__(self):
+        self.current_scene = None
+        self.next_scene = None
+
+        self.state = "idle"
+
+        self.offset_x = 0
+        self.speed = 50
+
+    def set_scene(self, scene):
+        if self.current_scene is None:
+            self.current_scene = scene
+            self. state = "idle"
+            self.offset_x = 0
+        else:
+            self.next_scene = scene
+            self.state = "out"
+            self.offset_x = 0
+
+    def handle_events(self, events):
+        if self.current_scene:
+            self.current_scene.handle_events(events)
+
+    def update(self):
+        if self.current_scene is None:
+            return
+        
+        if self.state == "idle":
+            self.current_scene.update()
+
+        elif self.state == "out":
+            self.offset_x -= self.speed
+            
+            if abs(self.offset_x) >= 1920:
+                self.current_scene = self.next_scene
+                self.next_scene = None
+                self.offset_x = -1920
+                self.state = "in"
+
+        elif self.state == "in":
+            self.offset_x += self.speed
+
+            if self.offset_x >= 0:
+                self.offset_x = 0
+                self.state = "idle"
+
+    def draw(self, screen):
+        if self.state in ["idle", "out"]:
+            self.current_scene.draw(screen, self.offset_x)
+
+        if self.state == "in":
+            self.current_scene.draw(screen, self.offset_x)
+
+
 class Game:
     def __init__(self):
-
         self.screen  = pygame.display.set_mode((1920, 1080)) # Initiates window
         pygame.display.set_caption("Color Randomizer")
 
         # Loading Asset Images
         self.play_img = pygame.image.load('Gui/Buttons/Play.png').convert_alpha()
         self.playhover_img = pygame.image.load('Gui/Buttons/Play_HOVER.png').convert_alpha()
+
         self.randomcolor_img = pygame.image.load('Gui/Buttons/Random_Color.png').convert_alpha()
         self.randomcolorhover_img = pygame.image.load('Gui/Buttons/Random_Color_HOVER.png').convert_alpha()
+
         self.return_img = pygame.image.load('Gui/Buttons/Return.png').convert_alpha()
         self.returnhover_img = pygame.image.load('Gui/Buttons/Return_HOVER.png').convert_alpha()
 
@@ -35,12 +92,14 @@ class Game:
         self.font = pygame.font.Font('Gui/Fonts/GrapeSoda.ttf', 40)
 
         # Game States
-        self.game_state = "menu"
+        self.scene_manager = SceneManager()
 
         # Scenes
-        self.menu = MainMenu(self)
-        self.randomizer = Randomizer(self)
-        self.about = About(self)
+        self.menu_scene = MainMenu(self)
+        self.randomizer_scene = Randomizer(self)
+        self.about_scene = About(self)
+
+        self.scene_manager.set_scene(self.menu_scene)
 
     def run(self):
         while self.running:
@@ -55,25 +114,36 @@ class Game:
         sys.exit()
 
     def handle_events(self):
-        for event in pygame.event.get():
+        events = pygame.event.get()
+
+        for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
+
+        self.scene_manager.handle_events(events)
+
+    def update(self):
+        self.scene_manager.update()
+
+    def draw(self):
+        self.scene_manager.draw(self.screen)
+            
+
+class Scene:
+    def __init__(self, game):
+        self.game = game
+
+    def handle_events(self, events):
+        pass
 
     def update(self):
         pass
 
-    def draw(self):
-        if self.game_state == "menu":
-            self.menu.draw(self.screen)
+    def draw(self, screen, offset_x=0):
+        pass
 
-        elif self.game_state == "play":
-            self.randomizer.draw(self.screen)
 
-        elif self.game_state == "about":
-            self.about.draw(self.screen)
-            
-
-class MainMenu:
+class MainMenu(Scene):
     def __init__(self, game):
         self.game = game
 
@@ -87,29 +157,29 @@ class MainMenu:
     def update(self):
         pass
     
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0):
         screen.fill('white')
 
+        self.play_button.offset_x = offset_x
+        self.about_button.offset_x = offset_x
+        self.exit_button.offset_x = offset_x
+
         if self.play_button.draw(screen) == True:
-            self.game.game_state = "play"
-            print("Play")
+            self.game.scene_manager.set_scene(self.game.randomizer_scene)
             
         if self.about_button.draw(screen) == True:
-            print("About")
-            self.game.game_state = "about"
+            self.game.scene_manager.set_scene(self.game.about_scene)
 
         if self.exit_button.draw(screen) == True:
-            print("Exit")
             self.game.running = False
 
 
-class Randomizer:
+class Randomizer(Scene):
     def __init__(self, game):
         self.game = game
 
         self.random_color = (0, 0, 0)
         self.color_text = []
-
 
         self.randomcolor_button = button.Button(250, 300, game.randomcolor_img, game.randomcolorhover_img, 1)
         self.return_button = button.Button(250, 500, game.return_img, game.returnhover_img, 1)
@@ -122,14 +192,17 @@ class Randomizer:
                                   self.card_rect.centery - 68)
 
     
-    def draw(self, screen):
+    def draw(self, screen, offset_x):
         screen.fill('white')
+
+        self.randomcolor_button.offset_x = offset_x
+        self.return_button.offset_x = offset_x
         
         if self.randomcolor_button.draw(screen):
             self.pick_color()
 
         if self.return_button.draw(screen):
-            self.game.game_state = "menu"
+            self.game.scene_manager.set_scene(self.game.menu_scene)
 
         screen.blit(self.card_img, self.card_rect)
         pygame.draw.rect(screen, self.random_color, self.color_rect)
@@ -154,8 +227,12 @@ class Randomizer:
             self.game.font.render(f"{self.random_color}", True, 'black'),
         ]
 
+    def handle_events(self, events):
+        for event in events:
+            pass
 
-class About:
+
+class About(Scene):
     def __init__(self, game):
         self.game = game
 
@@ -174,14 +251,16 @@ class About:
         self.about_text = [game.font.render(line, True, 'black') 
                            for line in about_data]
         
-    def draw(self, screen):
+    def draw(self, screen, offset_x):
         screen.fill('white')
+
+        self.return_button.offset_x = offset_x
 
         for i, surface in enumerate(self.about_text):
             screen.blit(surface, (100, 100 + i * 50))
 
         if self.return_button.draw(screen):
-            self.game.game_state = "menu"
+            self.game.scene_manager.set_scene(self.game.menu_scene)
 
 
 if __name__ == "__main__":
