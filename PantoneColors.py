@@ -45,21 +45,20 @@ class SceneManager:
         if self.state == "idle":
             self.current_scene.update()
             return
+        
+        self.progress += 0.02 # Speed
 
         if self.state == "transition":
-            self.progress += 0.02 # Speed
-
             if self.progress >= 1:
-                self.progress = 1
+                self.progress = 0
                 self.current_scene = self.next_scene
                 self.next_scene = None
                 self.state = "fade_in"
                 return 
 
         if self.state == "fade_in":
-            self.progress -= 0.03 # Speed
 
-            if self.progress <= 0:
+            if self.progress >= 1:
                 self.progress = 0
                 self.state = "idle"
             
@@ -74,17 +73,20 @@ class SceneManager:
         if self.state == "transition":
             offset = -int(t * 1920)
 
-        elif self.state =="fade_in":
-            alpha = -int((1 - t) * 1920)
-
         self.current_scene.draw(screen, offset)
 
-        if self.state != "idle":
+        if self.state in ("transition", "fade_in"):
             fade = pygame.Surface((1920, 1080))
             fade.fill((255, 255, 255))
-            alpha = int(abs(t - 0.5) * 2 * 255)
+
+            if self.state == "transition":
+                alpha = int(t * 255)
+            else:
+                alpha = int((1 - t) * 255)
+
             fade.set_alpha(alpha)
             screen.blit(fade, (0, 0))
+
 
 
 class Game:
