@@ -223,7 +223,11 @@ class Intro(Scene):
     def update(self):
         self.timer += 1
 
+<<<<<<< HEAD
         if self.timer >= self.total_time and not self.finished:
+=======
+        if self.timer >= self.total_time and not self.finsihed:
+>>>>>>> e13aa205ab82b4faa358099f0acc55b4ddb1cb4a
             self.finished = True
             self.game.scene_manager.set_scene(self.game.menu_scene)
 
