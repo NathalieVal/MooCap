@@ -104,7 +104,7 @@ class Scene:
 
 class Game:
     def __init__(self):
-        self.screen  = pygame.display.set_mode((1920, 1080)) # Initiates window
+        self.screen  = pygame.display.set_mode((1250, 1080)) # Initiates window
         pygame.display.set_caption("Color Randomizer")
 
         # Loading Asset Images
@@ -142,7 +142,7 @@ class Game:
         self.randomizer_scene = Randomizer(self)
         self.about_scene = About(self)
 
-        self.scene_manager.set_scene(self.intro_scene)
+        self.scene_manager.set_scene(self.randomizer_scene)
 
     def run(self):
         while self.running:
@@ -217,7 +217,7 @@ class Intro(Scene):
         self.logo_placeholder.set_colorkey((0, 0, 0))
         self.logo_placeholder.set_alpha(alpha)
         pygame.draw.circle(self.logo_placeholder, (0, 0, 255), (100, 100), 100)
-        screen.blit(self.logo_placeholder, (960, 540))
+        screen.blit(self.logo_placeholder, (625, 540))
 
         # self.logo.set_alpha(alpha)
 
@@ -256,41 +256,57 @@ class MainMenu(Scene):
 
 
 class ColorCard:
+    def __init__(self, image, color, color_text, target_positon):
+        self.image = image
+        self.color = color
+        self.color_text = color_text
 
+        self.x, self.y = target_positon[0], -700
+        self.target_x, self.target_y = target_positon
+
+        self.speed = 20
+
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+
+        self.color_rect = pygame.Rect(0, 0, 455, 455)
 
     def handle_events(self, events):
         pass
 
     def update(self):
-        pass
+        self.y += (self.target_y - self.y) * 0.15
+        self.rect.center = (self.x, self.y)
 
-    def draw(self, screen, offset_x=0):
-        pass
+    def draw(self, screen):
+        self.color_rect.center = (self.rect.centerx, self.rect.centery - 70)
+
+        image = self.image.copy()
+        screen.blit(image,self.rect)
+
+        pygame.draw.rect(screen, self.color, self.color_rect)
+
+        for i, surface in enumerate(self.color_text):
+            screen.blit(surface, (self.rect.left + 20,
+                        self.rect.bottom - 140 + i * 50))
 
 
 class Randomizer(Scene):
     def __init__(self, game):
         self.game = game
 
-        self.random_color = (0, 0, 0)
-        self.color_text = []
-
         self.randomcolor_button = button.Button(300, 440, game.randomcolor_img, game.randomcolorhover_img, 1)
         self.return_button = button.Button(300, 640, game.return_img, game.returnhover_img, 1)
 
         self.card_img = game.card_img
-        self.card_rect = self.card_img.get_rect(center=(960, 540))
-
-        self.color_rect = pygame.Rect(0, 0, 455, 455)
-        self.color_rect.center = (self.card_rect.centerx,
-                                  self.card_rect.centery - 68)
+        self.cards = []
         
     def handle_events(self, events):
         for event in events:
             pass
 
     def update(self):
-        pass
+        for card in self.cards:
+            card.update()
 
     
     def draw(self, screen, offset_x):
@@ -305,12 +321,8 @@ class Randomizer(Scene):
         if self.return_button.draw(screen):
             self.game.scene_manager.set_scene(self.game.menu_scene)
 
-        screen.blit(self.card_img, self.card_rect)
-        pygame.draw.rect(screen, self.random_color, self.color_rect)
-
-        for i, surface in enumerate(self.color_text):
-            screen.blit(surface, (self.card_rect.left + 20,
-                        self.card_rect.bottom - 140 + i * 50))
+        for card in self.cards:
+            card.draw(screen)
                 
             
     def pick_color(self):
@@ -323,10 +335,23 @@ class Randomizer(Scene):
 
         print(name, code, self.random_color)
 
-        self.color_text = [
+        self.text_color = [
             self.game.font.render(name, True, 'black'),
             self.game.font.render(f"{self.random_color}", True, 'black'),
         ]
+
+        self.new_card = ColorCard(self.card_img, 
+                                self.random_color, 
+                                self.text_color,
+                                (850, 475))
+
+        self.cards.append(self.new_card)
+
+        for i, card in enumerate(self.cards):
+            card.target_y = 475 + i * 18
+
+        if len(self.cards) > 5:
+            self.cards.pop(0)
 
 
 class About(Scene):
